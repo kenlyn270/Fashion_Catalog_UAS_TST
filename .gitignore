@@ -1,0 +1,10 @@
+.env
+writable/*
+!writable/.htaccess
+vendor/
+node_modules/
+writable/cache/
+writable/logs/
+writable/session/
+writable/uploads/
+.DS_Store
