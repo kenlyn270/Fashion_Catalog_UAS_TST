@@ -12,7 +12,6 @@ class ProductsAPI extends ResourceController
         return $key === $adminKey;
     }
 
-    // GET /products?page=1&limit=10
     public function index()
     {
         $model = model(ProductModel::class);
@@ -34,7 +33,6 @@ class ProductsAPI extends ResourceController
         ], 200);
     }
 
-    // GET /products/{id}
     public function show($id = null)
     {
         $model = model(ProductModel::class);
@@ -46,14 +44,13 @@ class ProductsAPI extends ResourceController
         return $this->respond(['message' => 'success', 'product' => $item], 200);
     }
 
-    // GET /products/search?query=...&category=...&tags=tag1,tag2
     public function search()
     {
         $model = model(ProductModel::class);
 
         $query = $this->request->getGet('query');
         $category = $this->request->getGet('category');
-        $tags = $this->request->getGet('tags'); // comma separated
+        $tags = $this->request->getGet('tags'); 
 
         $builder = $model->builder();
 
@@ -65,7 +62,6 @@ class ProductsAPI extends ResourceController
         }
         if ($tags) {
             $tagList = array_filter(array_map('trim', explode(',', $tags)));
-            // karena tags disimpan string, kita pakai LIKE untuk masing-masing tag
             foreach ($tagList as $t) {
                 $builder->like('tags', $t);
             }
@@ -76,7 +72,6 @@ class ProductsAPI extends ResourceController
         return $this->respond(['message' => 'success', 'products' => $results], 200);
     }
 
-    // GET /products/categories
     public function categories()
     {
         $model = model(ProductModel::class);
@@ -86,7 +81,6 @@ class ProductsAPI extends ResourceController
         return $this->respond(['message' => 'success', 'categories' => $categories], 200);
     }
 
-    // GET /products/tags
     public function tags()
     {
         $model = model(ProductModel::class);
@@ -104,14 +98,12 @@ class ProductsAPI extends ResourceController
         return $this->respond(['message' => 'success', 'tags' => $unique], 200);
     }
 
-    // GET /products/recommendations?body_type=...&style=...
-    // (versi sederhana rule-based: pakai tags style/body_type)
     public function recommendations()
     {
         $model = model(ProductModel::class);
 
-        $body = $this->request->getGet('body_type'); // misal "petite"
-        $style = $this->request->getGet('style');    // misal "casual"
+        $body = $this->request->getGet('body_type'); 
+        $style = $this->request->getGet('style');
 
         $builder = $model->builder();
 
@@ -127,7 +119,6 @@ class ProductsAPI extends ResourceController
         ], 200);
     }
 
-    // POST /products (admin only)
     public function create()
     {
         if (!$this->isAdmin()) {
@@ -138,12 +129,10 @@ class ProductsAPI extends ResourceController
 
         $data = $this->request->getJSON(true);
         if (!$data) {
-            // fallback kalau form-data
             $data = $this->request->getPost();
         }
 
         $data['created_at'] = date('Y-m-d H:i:s');
-        // $data['updated_at'] = date('Y-m-d H:i:s');
 
         $id = $model->insert($data, true);
 

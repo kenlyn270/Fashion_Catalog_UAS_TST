@@ -11,7 +11,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3307:3306"   # host 3307 -> container 3306 (biar nggak bentrok XAMPP)
+      - "3307:3306"
 
   app:
     build: .
@@ -20,11 +20,11 @@ services:
     depends_on:
       - db
     ports:
-      - "8080:80"     # host 8080 -> apache 80
+      - "8080:80"
     environment:
       CI_ENVIRONMENT: development
     volumes:
-      - .:/var/www/html   # live sync (opsional, enak pas dev)
+      - .:/var/www/html
       - ./writable:/var/www/html/writable
 volumes:
   db_data:
