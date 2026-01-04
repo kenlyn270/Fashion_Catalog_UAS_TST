@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clothify | Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #FFF5F7; 
+            overflow: hidden; 
+            height: 100vh;
+            margin: 0;
+        }
+        h1 { font-family: 'Playfair Display', serif; }
+        .bg-gradient-soft {
+            background: linear-gradient(135deg, #FFF5F7 0%, #FDF2FF 100%);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        .animate-float-1 { animation: float 4s ease-in-out infinite; }
+        .animate-float-2 { animation: float 5s ease-in-out infinite 1s; }
+        .animate-float-3 { animation: float 6s ease-in-out infinite 0.5s; }
+    </style>
+</head>
+<body class="bg-gradient-soft flex items-center justify-center min-h-screen relative">
+
+    <!-- <div class="absolute top-10 left-12 text-4xl font-bold text-purple-400 italic z-50">Clothify.</div> -->
+
+    <main class="w-full min-h-screen flex flex-col md:flex-row items-center">
+        
+        <div class="flex-1 z-10 space-y-10 pl-12 md:pl-24 flex flex-col items-start text-left justify-center h-full">
+            <div class="space-y-4">
+                <span class="px-4 py-2 rounded-full bg-white/50 text-pink-400 text-[10px] font-bold tracking-[0.2em] uppercase shadow-sm">Your Personal Stylist</span>
+                <h1 class="text-7xl md:text-9xl font-bold text-[#2D2D5F] leading-[1.0] -ml-1">
+                    Discover your <br> 
+                    <span class="text-purple-400 italic">Clothify Aura</span> <br>
+                    seamlessly.
+                </h1>
+                <p class="text-lg text-gray-500 max-w-sm leading-relaxed pt-4">
+                    Discover fashion that fits your body type and personal aesthetic perfectly.
+                </p>
+            </div>
+            
+            <div class="flex items-center space-x-4 pt-4">
+                <button onclick="toggleModal()" class="bg-gradient-to-r from-pink-400 to-purple-400 text-white px-10 py-5 rounded-full font-bold shadow-xl shadow-purple-200 hover:scale-105 transition duration-300">
+                    Get Started — Login
+                </button>
+                <button onclick="toggleModal()" class="bg-white text-pink-400 border border-pink-100 px-10 py-5 rounded-full font-bold hover:bg-pink-50 transition duration-300">
+                    Register
+                </button>
+            </div>
+        </div>
+
+    <div class="flex-1 relative h-full flex items-center justify-center overflow-hidden pr-20">
+        
+                <div class="relative w-[100%] h-[90%] flex items-center justify-center">
+                    <div class="w-full h-full rounded-[50px] overflow-hidden shadow-4xl relative group bg-white">
+                        <img src="assets/model.PNG" 
+                            alt="Main Inspiration" 
+                            class="w-full h-full object-contain grayscale-[10%] group-hover:grayscale-0 group-hover:scale-105 transition duration-1000">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-tr from-purple-100/20 to-transparent"></div>
+                    </div>
+
+                    <div class="absolute top-[40%] left-[7%] bg-white/95 p-4 rounded-2xl shadow-xl z-20 animate-float-1 border border-pink-50 min-w-[180px]">
+                        <p class="text-[10px] text-pink-400 font-bold uppercase tracking-wider">Analysis ✨</p>
+                        <p class="text-sm font-semibold text-gray-800">Perfect Match Found!</p>
+                    </div>
+
+                    <div class="absolute top-[40%] -left-15 bg-white/95 p-4 rounded-2xl shadow-xl z-20 animate-float-2 border border-purple-50 min-w-[180px]">
+                        <p class="text-[10px] text-purple-400 font-bold uppercase tracking-wider">Body Type</p>
+                        <p class="text-sm font-semibold text-gray-800">Hourglass Shape ✨</p>
+                    </div>
+
+                    <div class="absolute top-[40%] right-16 bg-white/95 p-4 rounded-2xl shadow-xl z-20 animate-float-3 border border-blue-50 min-w-[180px]">
+                        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">Style Preference</p>
+                        <p class="text-sm font-semibold text-gray-800">Clean & Minimalist 🌿</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-[120px] -z-10"></div>
+        <div class="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-pink-200/30 rounded-full blur-[120px] -z-10"></div>
+
+        <div id="auth-modal" class="fixed inset-0 bg-black/40 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
+            <div class="bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl relative animate-float-1">
+                <button onclick="toggleModal()" class="absolute top-6 right-8 text-gray-400 hover:text-pink-400 text-2xl">&times;</button>
+                
+                <div class="flex space-x-8 mb-8 border-b border-pink-50 pb-2">
+                    <button onclick="switchTab('login')" id="tab-login" class="text-pink-400 font-bold border-b-2 border-pink-400 pb-2 transition cursor-pointer">Login</button>
+                    <button onclick="switchTab('register')" id="tab-register" class="text-gray-400 font-bold border-b-2 border-transparent pb-2 transition cursor-pointer">Register</button>
+                </div>
+
+                <form id="login-form" class="space-y-5">
+                    <h2 class="text-2xl font-bold text-[#2D2D5F]">Welcome Back!</h2>
+                    <input type="email" placeholder="Email Address" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+                    <input type="password" placeholder="Password" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+                    <button type="button" onclick="handleAuth('login')" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-200 hover:scale-[1.02] transition">Login to Clothify</button>
+                </form>
+
+                <form id="register-form" class="space-y-5 hidden">
+                    <h2 class="text-2xl font-bold text-[#2D2D5F]">Join the Club!</h2>
+                    <input type="text" placeholder="Full Name" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+                    <input type="email" placeholder="Email Address" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+                    <input type="password" placeholder="Create Password" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+                    <button type="button" onclick="handleAuth('register')" class="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-200 hover:scale-[1.02] transition">Create Account</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="catalog-section" class="hidden min-h-screen bg-[#FFF5F7]">
+            <nav class="flex justify-between items-center px-8 md:px-12 py-6 bg-white/30 backdrop-blur-md sticky top-0 z-[60]">
+                <div class="text-3xl font-bold text-purple-400 italic">Clothify.</div>
+                
+                <div class="hidden md:flex space-x-10 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">
+                    <button onclick="filterCategory('')" class="hover:text-pink-400 transition">All</button>
+                    <button onclick="filterCategory('top')" class="hover:text-pink-400 transition">Tops</button>
+                    <button onclick="filterCategory('bottom')" class="hover:text-pink-400 transition">Bottoms</button>
+                    <button onclick="filterCategory('outer')" class="hover:text-pink-400 transition">Outerwear</button>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <span id="user-email" class="text-[10px] font-bold text-pink-400 hidden md:block"></span>
+                    <button onclick="logout()" class="px-6 py-2 border border-pink-100 rounded-full text-[10px] font-bold text-gray-400 hover:bg-pink-50 transition">Logout</button>
+                </div>
+            </nav>
+
+            <header class="px-12 py-16 text-center">
+                <h2 class="text-7xl font-bold text-[#2D2D5F] mb-4" style="font-family: 'Playfair Display', serif;">
+                    Find Your <br> <span class="text-pink-400 italic">Fashion</span> Here
+                </h2>
+                <p class="text-gray-400 max-w-lg mx-auto">Explore our curated collection of 29+ premium pieces designed for your unique aura.</p>
+            </header>
+
+            <main class="px-12 pb-24">
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap--10">
+                    <div class="animate-pulse bg-white h-80 rounded-[40px]"></div>
+                    <div class="animate-pulse bg-white h-80 rounded-[40px]"></div>
+                    <div class="animate-pulse bg-white h-80 rounded-[40px]"></div>
+                </div>
+            </main>
+        </div>
+
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+        <script>
+        // Paste config dari Firebase Console kamu di sini
+        const firebaseConfig = {
+        apiKey: "AIzaSyBWGZAG1173_fGGd-PK_xsaT_0pgOaDU2w",
+        authDomain: "clothify-e7c2f.firebaseapp.com",
+        projectId: "clothify-e7c2f",
+        storageBucket: "clothify-e7c2f.firebasestorage.app",
+        messagingSenderId: "1039405837376",
+        appId: "1:1039405837376:web:116f907066a6fcd77a83a5"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        </script>
+
+        <script src="script.js"></script>
+</body>
+</html>

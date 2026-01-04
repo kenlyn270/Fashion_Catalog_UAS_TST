@@ -5,6 +5,17 @@ use App\Models\ProductModel;
 
 class ProductsAPI extends ResourceController
 {
+    public function __construct() {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        $method = $_SERVER['REQUEST_METHOD'];
+        if($method == "OPTIONS") {
+            header("HTTP/1.1 200 OK");
+            die();
+        }
+    }
+
     private function isAdmin(): bool
     {
         $adminKey = getenv('ADMIN_API_KEY') ?: 'admin-123';
@@ -17,10 +28,9 @@ class ProductsAPI extends ResourceController
         $model = model(ProductModel::class);
 
         $page  = (int)($this->request->getGet('page') ?? 1);
-        $limit = (int)($this->request->getGet('limit') ?? 10);
+        $limit = (int)($this->request->getGet('limit') ?? 50);
+        
         if ($page < 1) $page = 1;
-        if ($limit < 1) $limit = 10;
-
         $offset = ($page - 1) * $limit;
 
         $items = $model->findAll($limit, $offset);

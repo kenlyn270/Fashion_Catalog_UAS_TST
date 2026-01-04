@@ -1,0 +1,25 @@
+<div id="auth-modal" class="fixed inset-0 bg-black/30 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl relative">
+        <a href="index.html" class="absolute top-6 right-8 text-gray-400 hover:text-pink-400 text-2xl">&times;</a>
+        
+        <div class="flex space-x-8 mb-8 border-b border-pink-50 pb-2">
+            <button onclick="switchTab('login')" id="tab-login" class="text-pink-400 font-bold border-b-2 border-pink-400 pb-2 transition">Login</button>
+            <button onclick="switchTab('register')" id="tab-register" class="text-gray-400 font-bold border-b-2 border-transparent pb-2 transition">Register</button>
+        </div>
+
+        <form id="login-form" class="space-y-5">
+            <h2 class="text-2xl font-bold text-[#2D2D5F]">Welcome Back!</h2>
+            <input type="email" placeholder="Email Address" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+            <input type="password" placeholder="Password" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+            <button type="button" onclick="handleAuth('login')" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-200 hover:scale-[1.02] transition">Login to Clothify</button>
+        </form>
+
+        <form id="register-form" class="space-y-5 hidden">
+            <h2 class="text-2xl font-bold text-[#2D2D5F]">Join the Club.</h2>
+            <input type="text" placeholder="Full Name" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+            <input type="email" placeholder="Email Address" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+            <input type="password" placeholder="Create Password" class="w-full p-4 bg-pink-50/30 border border-pink-100 rounded-2xl outline-none focus:border-pink-400 transition text-sm">
+            <button type="button" onclick="handleAuth('register')" class="w-full bg-gradient-to-r from-pink-400 to-purple-400 text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-200 hover:scale-[1.02] transition">Create Account</button>
+        </form>
+    </div>
+</div>
