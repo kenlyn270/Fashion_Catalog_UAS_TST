@@ -148,4 +148,104 @@ class ProductsAPI extends ResourceController
 
         return $this->respond(['message' => 'created', 'id' => $id], 201);
     }
+
+    public function recommend()
+    {
+        $data = $this->request->getJSON(true);
+        if (!$data) return $this->fail("Invalid JSON body");
+
+        $shoulder = $data['shoulder'] ?? null;
+        $waist    = $data['waist'] ?? null;
+        $thigh    = $data['thigh'] ?? null;
+        $style    = $data['style'] ?? 'casual';
+
+        if (!$shoulder || !$waist) {
+            return $this->failValidationErrors("Measurement incomplete (shoulder & waist required)");
+        }
+
+        $apiKey = getenv('GEMINI_API_KEY');
+        if (!$apiKey) return $this->failServerError("GEMINI_API_KEY not set in .env");
+
+        // Prompt: minta JSON biar gampang diparse
+        $prompt = <<<PROMPT
+    You are a fashion stylist assistant.
+    User measurements:
+    - Shoulder: {$shoulder} cm
+    - Waist: {$waist} cm
+    - Thigh: {$thigh} cm
+    Preferred style: {$style}
+
+    Return ONLY valid JSON with this exact shape:
+    {
+    "bodyType": "one short phrase",
+    "tips": ["tip 1", "tip 2"],
+    "recommendedTags": ["tag1","tag2","tag3","tag4","tag5"]
+    }
+
+    Rules:
+    - tips must be exactly 2 items
+    - recommendedTags must be 5 items, simple lowercase words (example: "oversized", "high-waist")
+    - no markdown, no extra text outside JSON
+    PROMPT;
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}";
+
+        $payload = [
+            "contents" => [
+                ["parts" => [["text" => $prompt]]]
+            ],
+            "generationConfig" => [
+                "temperature" => 0.7
+            ]
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_TIMEOUT => 30
+        ]);
+
+        $result = curl_exec($ch);
+
+        if ($result === false) {
+            $err = curl_error($ch);
+            curl_close($ch);
+            return $this->failServerError("Curl error: {$err}");
+        }
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $response = json_decode($result, true);
+
+        if ($httpCode >= 400) {
+            return $this->respond([
+                "message" => "gemini_error",
+                "http_code" => $httpCode,
+                "raw" => $response
+            ], 500);
+        }
+
+        $text = $response['candidates'][0]['content']['parts'][0]['text'] ?? "";
+
+        // Coba parse JSON dari Gemini
+        $aiJson = json_decode($text, true);
+
+        // Kalau parse gagal, tetap balikin text mentah biar kamu lihat
+        if (!$aiJson) {
+            return $this->respond([
+                "message" => "success_but_unparsed",
+                "ai_text" => $text
+            ], 200);
+        }
+
+        return $this->respond([
+            "message" => "success",
+            "ai" => $aiJson
+        ], 200);
+    }
+
 }

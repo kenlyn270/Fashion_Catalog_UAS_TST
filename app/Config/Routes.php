@@ -11,6 +11,7 @@ $routes->get('/products/(:num)', 'ProductsAPI::show/$1');
 
 $routes->get('/products/search', 'ProductsAPI::search');
 $routes->get('/products/recommendations', 'ProductsAPI::recommendations');
+$routes->post('products/recommend', 'ProductsAPI::recommend');
 $routes->get('/products/categories', 'ProductsAPI::categories');
 $routes->get('/products/tags', 'ProductsAPI::tags');
 

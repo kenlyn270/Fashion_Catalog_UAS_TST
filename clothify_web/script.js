@@ -55,11 +55,29 @@ function handleAuth(type) {
             .then((userCredential) => {
                 loginSuccess();
             })
+            .catch((error) => {
+                if (error.code === 'auth/email-already-in-use') {
+                    alert("❌ Email ini sudah terdaftar");
+                } else if (error.code === 'auth/weak-password') {
+                    alert("⚠️ Password minimal 6 karakter ya");
+                } else {
+                    alert("❌ Gagal register: " + error.message);
+                }
+            });
     } else {
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 loginSuccess();
             })
+            .catch((error) => {
+                if (error.code === 'auth/user-not-found') {
+                    alert("❌ Email belum terdaftar");
+                } else if (error.code === 'auth/wrong-password') {
+                    alert("❌ Password salah");
+                } else {
+                    alert("❌ Login gagal: " + error.message);
+                }
+            });
     }
 }
 
@@ -118,7 +136,7 @@ async function openDetail(id) {
         contentArea.classList.remove('hidden');
         contentArea.innerHTML = '<p class="text-center py-10 text-pink-400 animate-pulse text-xs font-bold">Mencari inspirasi yang benar-benar pas... ✨</p>';
 
-        const inspiraRes = await fetch(`https://inspira_container.otwdochub.my.id/api/looks`);
+        const inspiraRes = await fetch(`https://inspira-container.otwdochub.my.id/api/looks`);
         const inspiraData = await inspiraRes.json();
         const allLooks = inspiraData.data || inspiraData;
 
@@ -187,6 +205,52 @@ function renderSidePanel(prod, filteredLooks) {
     `;
 }
 
+async function analyzeAura() {
+  const sh = document.getElementById('shoulder').value;
+  const ws = document.getElementById('waist').value;
+  const th = document.getElementById('thigh').value;
+  const pref = document.getElementById('style-pref').value;
+
+  const tipsP = document.getElementById('ai-tips');
+
+  if(!sh || !ws) return alert("Isi data terlebih dahulu ya.");
+
+  tipsP.innerHTML = "Menganalisis ... ✨";
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/products/recommend`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        shoulder: sh,
+        waist: ws,
+        thigh: th,
+        style: pref
+      })
+    });
+
+    const data = await res.json();
+    console.log("recommend response:", data);
+
+    if (data.message !== "success") {
+      tipsP.innerHTML = `Error: ${data.ai_text || "harap coba lagi."}`;
+      return;
+    }
+
+    const ai = data.ai;
+    tipsP.innerHTML = `
+      <b>Body type:</b> ${ai.bodyType}<br>
+      <b>Tips:</b><br>• ${ai.tips[0]}<br>• ${ai.tips[1]}<br>
+      <b>Tags:</b> ${ai.recommendedTags.join(", ")}
+    `;
+
+  } catch (e) {
+    console.error(e);
+    tipsP.innerHTML = "Proses gagal, harap coba lagi.";
+  }
+}
+
+
 async function searchProduct() {
     const query = document.getElementById('search-input').value;
     const listContainer = document.getElementById('product-list');
@@ -196,6 +260,14 @@ async function searchProduct() {
     const data = await res.json();
     loadCatalogUI(data.products);
 }
+
+async function loadProductsByTags(tagsArr) {
+  const tags = encodeURIComponent(tagsArr.join(","));
+  const res = await fetch(`${API_BASE_URL}/products/search?tags=${tags}`);
+  const data = await res.json();
+  loadCatalogUI(data.products);
+}
+
 
 function filterCategory(cat) {
     loadCatalog(cat);
