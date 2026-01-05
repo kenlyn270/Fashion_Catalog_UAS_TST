@@ -5,6 +5,9 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
+$routes->options('(:any)', function () {
+    return service('response')->setStatusCode(204);
+});
 $routes->get('/', 'Home::index');
 $routes->get('/products', 'ProductsAPI::index');
 $routes->get('/products/(:num)', 'ProductsAPI::show/$1');
