@@ -44,6 +44,8 @@ Fashion Catalog System menyediakan layanan berbasis API yang dirancang untuk men
 }
 ```
 
+- - -
+
 ## Cara Mengakses Layanan
 
 Pengguna dapat mengakses layanan Clothify melalui website yang telah dideploy. Berikut merupakan alur penggunaannya:
@@ -72,3 +74,5 @@ Pengguna dapat mengakses layanan Clothify melalui website yang telah dideploy. B
 - Pada halaman detail produk, pengguna dapat menekan tombol **“Get This Item”** untuk diarahkan ke halaman pembelian produk pada platform e-commerce terkait.
 
 - Pengguna dapat keluar dari sistem dengan menekan tombol **Logout** yang tersedia pada bagian kanan atas halaman.
+
+- - -
