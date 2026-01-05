@@ -9,3 +9,32 @@
 .custom-scroll::-webkit-scrollbar {
     width: 3px;
 }
+
+.cat-btn {
+    padding: 8px 16px;
+    color: #9ca3af; 
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+.cat-btn.active {
+    color: #ec4899 !important; 
+    transform: scale(1.1);
+}
+
+.cat-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background-color: #ec4899;
+    border-radius: 99px;
+}

@@ -199,7 +199,7 @@ function renderSidePanel(prod, filteredLooks) {
             </div>
 
             <a href="${prod.product_url}" target="_blank" class="block w-full text-center bg-gradient-to-r from-pink-400 to-purple-400 text-white py-4 rounded-2xl mt-8 font-bold shadow-lg hover:scale-[1.02] transition">
-                Get This Look
+                Get This Item
             </a>
         </div>
     `;
@@ -264,27 +264,57 @@ ${data.ai.recommendedTags.map(t => `<span class="inline-block bg-pink-100 text-p
     }
 }
 
-
-
 async function searchProduct() {
     const query = document.getElementById('search-input').value;
     const listContainer = document.getElementById('product-list');
+    
     listContainer.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400 animate-pulse">Searching for your aura...</div>';
     
-    const res = await fetch(`${API_BASE_URL}/products/search?query=${query}`);
-    const data = await res.json();
-    loadCatalogUI(data.products);
+    try {
+        const res = await fetch(`${API_BASE_URL}/products/search?query=${query}`);
+        const data = await res.json();
+        const products = data.products || [];
+
+        listContainer.innerHTML = '';
+
+        if (products.length === 0) {
+            listContainer.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400">Duh, Mini nggak nemu "' + query + '" nih... 🌸</div>';
+            return;
+        }
+
+        products.forEach(prod => {
+            listContainer.innerHTML += `
+                <div onclick="openDetail(${prod.id})" class="group bg-white p-2 rounded-[24px] border border-pink-50 hover:shadow-md transition-all duration-500 cursor-pointer flex flex-col">
+                    <div class="relative overflow-hidden rounded-[18px] aspect-[4/5] bg-gray-50">
+                        <img src="${prod.image_url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                    </div>
+                    <div class="mt-2 px-1">
+                        <p class="text-[8px] font-bold text-pink-400 uppercase tracking-tighter">${prod.brand || 'Clothify'}</p>
+                        <h3 class="font-bold text-[#2D2D5F] text-[10px] mt-0.5 leading-tight truncate">${prod.name}</h3>
+                        <p class="text-pink-600 font-black text-xs mt-1">Rp ${Number(prod.price).toLocaleString('id-ID')}</p>
+                    </div>
+                </div>`;
+        });
+    } catch (error) {
+        console.error("Error search:", error);
+        listContainer.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Gagal nyari produknya Ken 😭</div>';
+    }
 }
 
 async function loadProductsByTags(tagsArr) {
   const tags = encodeURIComponent(tagsArr.join(","));
   const res = await fetch(`${API_BASE_URL}/products/search?tags=${tags}`);
   const data = await res.json();
-  loadCatalogUI(data.products);
+  loadCatalog(data.products);
 }
 
 
-function filterCategory(cat) {
+function filterCategory(cat, e) { 
+    const buttons = document.querySelectorAll('.cat-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));    
+    if (e && e.currentTarget) {
+        e.currentTarget.classList.add('active');
+    }
     loadCatalog(cat);
 }
 

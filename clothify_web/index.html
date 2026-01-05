@@ -27,7 +27,7 @@
         .animate-float-3 { animation: float 6s ease-in-out infinite 0.5s; }
     </style>
 </head>
-<body class="bg-gradient-soft flex items-center justify-center min-h-screen relative">
+<body class="bg-gradient-soft min-h-screen relative">
 
     <!-- <div class="absolute top-10 left-12 text-4xl font-bold text-purple-400 italic z-50">Clothify.</div> -->
 
@@ -130,19 +130,19 @@
                 </div>
             </nav>
 
-            <div class="flex p-4 gap-6 overflow-hidden">
+            <div class="flex items-start p-4 gap-6 overflow-hidden">
                 <div class="flex-[2.5]">
 
-                    <div class="bg-gradient-to-r from-pink-100/50 to-purple-100/50 rounded-[40px] p-8 mb-10 border border-white shadow-sm">
+                    <div class="bg-gradient-to-r from-pink-100 to-purple-100 rounded-[40px] p-8 mb-10 border border-white shadow-sm">
                         <div class="flex flex-col md:flex-row gap-8 items-center">
                             <div class="flex-1 space-y-4">
                                 <h3 class="text-2xl font-bold text-[#2D2D5F]" style="font-family: 'Playfair Display', serif;">Find Your Perfect Fit ✨</h3>
-                                <p class="text-xs text-gray-500">Input your measurements or body type to get personalized fashion tips & looks.</p>
+                                <p class="text-xs text-gray-500">Input your measurements to get personalized fashion tips & looks for your body type.</p>
                                 
                                 <div class="grid grid-cols-3 gap-3">
-                                    <input id="shoulder" type="number" placeholder="Bahu (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
-                                    <input id="waist" type="number" placeholder="Pinggang (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
-                                    <input id="thigh" type="number" placeholder="Paha (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
+                                    <input id="shoulder" type="number" placeholder="Shoulder (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
+                                    <input id="waist" type="number" placeholder="Waist (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
+                                    <input id="thigh" type="number" placeholder="Thigh (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
                                 </div>
                                 
                                 <div class="flex gap-3">
@@ -152,23 +152,23 @@
                                         <option value="feminine">Feminine Aesthetic</option>
                                         <option value="streetwear">Streetwear</option>
                                     </select>
-                                    <button onclick="analyzeAura()" class="bg-[#2D2D5F] text-white px-8 py-3 rounded-2xl text-xs font-bold hover:scale-105 transition">Analyze Aura</button>
+                                    <button onclick="analyzeAura()" class="bg-gradient-to-r from-pink-400 to-purple-400 text-white px-8 py-3 rounded-2xl text-xs font-bold hover:scale-105 transition">Analyze Aura</button>
                                 </div>
                             </div>
                             
-                            <div id="ai-response-area" class="flex-1 bg-white/80 backdrop-blur p-6 rounded-[30px] min-h-[150px] border border-white hidden">
-                                <p id="ai-tips" class="text-[11px] text-gray-600 leading-relaxed italic"></p>
+                            <div id="ai-response-area" class="flex-1 bg-gradient-to-br from-pink-400 to-purple-500 p-8 rounded-[40px] min-h-[150px] shadow-lg shadow-pink-100 hidden">
+                                <div id="ai-tips" class="text-sm md:text-base text-white leading-relaxed font-medium"></div>
                                 <div id="ai-suggested-looks" class="grid grid-cols-3 gap-2 mt-4"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex gap-4 mb-10 flex-wrap">
-                        <button onclick="filterCategory('')" class="cat-btn active">All Items</button>
-                        <button onclick="filterCategory('top')" class="cat-btn">Tops</button>
-                        <button onclick="filterCategory('bottom')" class="cat-btn">Bottoms</button>
-                        <button onclick="filterCategory('outer')" class="cat-btn">Outerwear</button>
-                        <button onclick="filterCategory('dresses')" class="cat-btn">Dresses</button>
+                    <div class="bg-white/90 backdrop-blur-sm rounded-full p-4 mb-10 border border-pink-50 shadow-sm flex justify-center items-center gap-10">
+                        <button onclick="filterCategory('', event)" class="cat-btn active">All Items</button>
+                        <button onclick="filterCategory('top', event)" class="cat-btn">Tops</button>
+                        <button onclick="filterCategory('bottom', event)" class="cat-btn">Bottoms</button>
+                        <button onclick="filterCategory('outer', event)" class="cat-btn">Outerwear</button>
+                        <button onclick="filterCategory('dress', event)" class="cat-btn">Dresses</button>
                     </div>
 
                     <h2 class="text-4xl font-bold text-[#2D2D5F] mb-8" style="font-family: 'Playfair Display', serif;">Discover Your Style</h2>
@@ -177,11 +177,10 @@
                         </div>
                 </div>
 
-                <div class="flex-1 hidden xl:block sticky top-32 h-[calc(100vh-160px)]">
+                <div class="flex-1 hidden xl:block sticky h-[calc(100vh-160px)]">
                     <div class="bg-white rounded-[40px] p-8 border border-pink-100 shadow-xl h-full overflow-y-auto custom-scroll">
                         <div id="side-detail-placeholder" class="text-center py-20">
-                            <div class="text-5xl mb-4 italic opacity-20">✨</div>
-                            <p class="text-gray-400 italic text-sm">Click a product to see detail & inspiration</p>
+                             <p class="text-gray-400 italic text-sm">Click a product to see detail & inspiration</p>
                         </div>
                         <div id="side-detail-content" class="hidden">
                             </div>
@@ -192,14 +191,33 @@
 
         <style>
             .cat-btn {
-                @apply px-8 py-3 rounded-2xl bg-white border border-pink-50 text-gray-500 font-bold text-xs whitespace-nowrap shadow-sm hover:border-pink-300 transition;
+                padding: 8px 16px;
+                color: #9ca3af; 
+                font-weight: 700;
+                font-size: 0.875rem;
+                transition: all 0.3s ease;
+                position: relative;
+                cursor: pointer;
+                border: none;
+                background: transparent;
             }
+
             .cat-btn.active {
-                @apply bg-pink-400 text-white border-pink-400 shadow-pink-200;
+                color: #ec4899 !important; 
+                transform: scale(1.1);
             }
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .custom-scroll::-webkit-scrollbar { width: 4px; }
-            .custom-scroll::-webkit-scrollbar-thumb { background: #FCE7F3; border-radius: 10px; }
+
+            .cat-btn.active::after {
+                content: "";
+                position: absolute;
+                bottom: -2px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 24px;
+                height: 3px;
+                background-color: #ec4899;
+                border-radius: 99px;
+            }
         </style>
 
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

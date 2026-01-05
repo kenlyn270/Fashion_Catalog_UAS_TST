@@ -247,5 +247,4 @@ class ProductsAPI extends ResourceController
             "ai" => $aiJson
         ], 200);
     }
-
 }
