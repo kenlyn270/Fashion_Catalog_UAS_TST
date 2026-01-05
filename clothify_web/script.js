@@ -206,49 +206,64 @@ function renderSidePanel(prod, filteredLooks) {
 }
 
 async function analyzeAura() {
-  const sh = document.getElementById('shoulder').value;
-  const ws = document.getElementById('waist').value;
-  const th = document.getElementById('thigh').value;
-  const pref = document.getElementById('style-pref').value;
+    const shoulder = document.getElementById('shoulder').value;
+    const waist = document.getElementById('waist').value;
+    const thigh = document.getElementById('thigh').value;
+    const style = document.getElementById('style-pref').value;
 
-  const tipsP = document.getElementById('ai-tips');
-
-  if(!sh || !ws) return alert("Isi data terlebih dahulu ya.");
-
-  tipsP.innerHTML = "Menganalisis ... ✨";
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/products/recommend`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        shoulder: sh,
-        waist: ws,
-        thigh: th,
-        style: pref
-      })
-    });
-
-    const data = await res.json();
-    console.log("recommend response:", data);
-
-    if (data.message !== "success") {
-      tipsP.innerHTML = `Error: ${data.ai_text || "harap coba lagi."}`;
-      return;
+    if (!shoulder || !waist) {
+        alert("Isi minimal bahu dan pinggang dulu yaa ✨");
+        return;
     }
 
-    const ai = data.ai;
-    tipsP.innerHTML = `
-      <b>Body type:</b> ${ai.bodyType}<br>
-      <b>Tips:</b><br>• ${ai.tips[0]}<br>• ${ai.tips[1]}<br>
-      <b>Tags:</b> ${ai.recommendedTags.join(", ")}
-    `;
+    const responseArea = document.getElementById('ai-response-area');
+    const tipsEl = document.getElementById('ai-tips');
 
-  } catch (e) {
-    console.error(e);
-    tipsP.innerHTML = "Proses gagal, harap coba lagi.";
-  }
+    responseArea.classList.remove('hidden');
+    tipsEl.innerHTML = "Analyzing your aura... ✨";
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/products/recommend`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                shoulder: Number(shoulder),
+                waist: Number(waist),
+                thigh: Number(thigh),
+                style: style
+            })
+        });
+
+        const data = await res.json();
+        console.log("AI RESPONSE:", data);
+
+        if (!data.ai) {
+            tipsEl.innerHTML = "AI belum bisa kasih hasil 😭 coba lagi yaa";
+            return;
+        }
+
+        const tipsText = `
+✨ <b>Body Type:</b> ${data.ai.bodyType}<br><br>
+💡 <b>Tips:</b>
+<ul class="list-disc pl-4">
+  <li>${data.ai.tips[0]}</li>
+  <li>${data.ai.tips[1]}</li>
+</ul>
+<br>
+🏷 <b>Recommended Tags:</b><br>
+${data.ai.recommendedTags.map(t => `<span class="inline-block bg-pink-100 text-pink-600 text-[10px] px-2 py-1 rounded-full mr-1 mt-1">${t}</span>`).join("")}
+        `;
+
+        tipsEl.innerHTML = tipsText;
+
+    } catch (err) {
+        console.error(err);
+        tipsEl.innerHTML = "Server error 😭 (cek console yaa)";
+    }
 }
+
 
 
 async function searchProduct() {
