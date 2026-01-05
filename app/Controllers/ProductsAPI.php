@@ -29,7 +29,7 @@ class ProductsAPI extends ResourceController
 
         $page  = (int)($this->request->getGet('page') ?? 1);
         $limit = (int)($this->request->getGet('limit') ?? 50);
-        
+
         if ($page < 1) $page = 1;
         $offset = ($page - 1) * $limit;
 
@@ -120,7 +120,7 @@ class ProductsAPI extends ResourceController
         if ($body)  $builder->like('tags', $body);
         if ($style) $builder->like('tags', $style);
 
-        $results = $builder->limit(10)->get()->getResultArray();
+        $results = $builder->limit(50)->get()->getResultArray();
 
         return $this->respond([
             'message' => 'success',

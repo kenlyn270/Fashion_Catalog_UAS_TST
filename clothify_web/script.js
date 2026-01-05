@@ -1,80 +1,9 @@
 const API_BASE_URL = "https://clothify.otwdochub.my.id";
 
-// 1. Mock Data API Teman (Inspirasi OOTD)
-// Nanti kalau API teman sudah jadi, ganti fetch ke URL dia
-const getInspirationFromFriend = (category) => {
-    return [
-        { id: 1, img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400", title: "Street Style Look" },
-        { id: 2, img: "https://images.unsplash.com/photo-1529139513055-07f9e279c5fb?w=400", title: "Minimalist Chic" }
-    ];
-};
-
-// 2. Fungsi Load Catalog
-// async function loadCatalog() {
-//     const response = await fetch(`${API_BASE_URL}/products`);
-//     const data = await response.json();
-    
-//     const container = document.getElementById('app');
-//     container.innerHTML = `
-//         <header class="text-center my-12">
-//             <h2 class="text-4xl mb-2">Find Your Fashion Here</h2>
-//             <p class="text-gray-400">Discover pieces that speak to your style.</p>
-//         </header>
-//         <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="product-list"></div>
-//     `;
-
-//     const list = document.getElementById('product-list');
-//     data.products.forEach(prod => {
-//         list.innerHTML += `
-//             <div onclick="openDetail(${prod.id})" class="cursor-pointer group">
-//                 <div class="overflow-hidden rounded-2xl bg-pastel-pink aspect-[3/4]">
-//                     <img src="${prod.image_url}" class="w-full h-full object-cover group-hover:scale-105 transition">
-//                 </div>
-//                 <h3 class="mt-4 font-semibold text-lg">${prod.name}</h3>
-//                 <p class="text-purple-400 font-medium">Rp ${prod.price}</p>
-//             </div>
-//         `;
-//     });
-// }
-
-// 3. Fungsi Detail (Integrasi 2 API)
-async function openDetail(id) {
-    const res = await fetch(`${API_BASE_URL}/products/${id}`);
-    const product = await res.json();
-    
-    // Ambil inspirasi dari 'API Teman'
-    const inspirations = getInspirationFromFriend(product.category);
-
-    const modal = document.getElementById('modal');
-    const content = document.getElementById('modal-content');
-    
-    content.innerHTML = `
-        <div class="flex-1">
-            <img src="${product.image_url}" class="rounded-2xl w-full">
-            <h2 class="text-3xl mt-4">${product.name}</h2>
-            <p class="text-gray-600 mt-2">${product.description}</p>
-        </div>
-        <div class="flex-1 bg-pastel-purple/30 p-6 rounded-2xl">
-            <h3 class="text-xl font-bold mb-4 italic text-purple-500">Style Inspiration</h3>
-            <div class="grid grid-cols-2 gap-4">
-                ${inspirations.map(ins => `
-                    <div>
-                        <img src="${ins.img}" class="rounded-lg shadow-sm">
-                        <p class="text-xs mt-2 text-center">${ins.title}</p>
-                    </div>
-                `).join('')}
-            </div>
-            <button class="w-full bg-purple-400 text-white py-3 rounded-full mt-8 hover:bg-purple-500">Buy Now</button>
-        </div>
-    `;
-    modal.classList.remove('hidden');
-}
-
 function closeModal() {
     document.getElementById('modal').classList.add('hidden');
 }
 
-// Fungsi buka/tutup Modal
 function toggleModal() {
     console.log("Tombol diklik!");
     const modal = document.getElementById('auth-modal');
@@ -111,12 +40,7 @@ function switchTab(type) {
     }
 }
 
-// Simulasi Auth (Nanti hubungin ke Controller CI kamu)
-// Hubungkan script.js ke index.html di paling bawah sebelum </body>
-// <script src="script.js"></script>
-
 function handleAuth(type) {
-    // Ambil input dari form
     const formId = type === 'login' ? 'login-form' : 'register-form';
     const email = document.querySelector(`#${formId} input[type="email"]`).value;
     const password = document.querySelector(`#${formId} input[type="password"]`).value;
@@ -127,102 +51,158 @@ function handleAuth(type) {
     }
 
     if (type === 'register') {
-        // Proses Register ke Firebase
         auth.createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                // alert("Hore! Akun Ken berhasil dibuat ✨");
                 loginSuccess();
             })
-            // .catch((error) => alert("Yah gagal regis: " + error.message));
     } else {
-        // Proses Login ke Firebase
         auth.signInWithEmailAndPassword(email, password)
             .then((userCredential) => {
-                // alert("Welcome back, Ken! ❤️");
                 loginSuccess();
             })
-            // .catch((error) => alert("Ups, login gagal: " + error.message));
     }
 }
 
 function loginSuccess() {
-    // Sembunyikan Landing & Modal
     document.querySelector('main').classList.add('hidden');
     document.getElementById('auth-modal').classList.add('hidden');
     document.body.style.overflow = 'auto';
-    
-    // Tampilkan Katalog
     document.getElementById('catalog-section').classList.remove('hidden');
     loadCatalog();
 }
 
-// Update fungsi loadCatalog agar tampilannya makin cantik & pastel
 async function loadCatalog(category = '') {
     const listContainer = document.getElementById('product-list');
     if (!listContainer) return;
 
-    // Tampilkan skeleton/loading
     listContainer.innerHTML = '<div class="col-span-full text-center text-gray-400 animate-pulse">Curating your aura...</div>';
     
     try {
-        // Gunakan URL yang benar sesuai endpoint search kamu
-        let url = `${API_BASE_URL}/products?limit=30`;
-        if (category) {
-            url = `${API_BASE_URL}/products/search?category=${category}`;
-        }
+        let url = `${API_BASE_URL}/products?limit=100`; 
+        if (category) url = `${API_BASE_URL}/products/search?category=${category}`;
 
         const response = await fetch(url);
-        if (!response.ok) throw new Error('Network response was not ok');
-        
         const data = await response.json();
-        const products = data.products || []; // Pastikan ambil array products
+        const products = data.products || [];
 
-        listContainer.innerHTML = ''; // Bersihkan loading
-
-        if (products.length === 0) {
-            listContainer.innerHTML = '<p class="col-span-full text-center text-gray-400">No products found in this category.</p>';
-            return;
-        }
+        listContainer.innerHTML = ''; 
 
         products.forEach(prod => {
             listContainer.innerHTML += `
-                <div onclick="openDetail(${prod.id})" class="group cursor-pointer flex flex-col items-center">
-                    <div class="relative w-full rounded-[40px] bg-white overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 aspect-[3/4]">
-                        <img src="${prod.image_url}" 
-                            alt="${prod.name}" 
-                            class="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-                            onerror="this.src='assets/placeholder.png'"> <div class="absolute bottom-4 left-4 right-4 p-4 bg-white/70 backdrop-blur-md rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p class="text-[10px] uppercase font-bold text-pink-500">${prod.brand || 'Urbanwear'}</p>
-                            <p class="text-sm font-bold text-[#2D2D5F]">Rp ${Number(prod.price).toLocaleString('id-ID')}</p>
-                        </div>
+                <div onclick="openDetail(${prod.id})" class="group bg-white p-2 rounded-[24px] border border-pink-50 hover:shadow-md transition-all duration-500 cursor-pointer flex flex-col">
+                    <div class="relative overflow-hidden rounded-[18px] aspect-[4/5] bg-gray-50">
+                        <img src="${prod.image_url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                     </div>
-                    <div class="mt-4 text-center">
-                        <h3 class="text-md font-bold text-[#2D2D5F]">${prod.name}</h3>
-                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">${prod.category}</p>
+                    
+                    <div class="mt-2 px-1">
+                        <p class="text-[8px] font-bold text-pink-400 uppercase tracking-tighter">${prod.brand || 'Clothify'}</p>
+                        <h3 class="font-bold text-[#2D2D5F] text-[10px] mt-0.5 leading-tight truncate">${prod.name}</h3>
+                        <p class="text-pink-600 font-black text-xs mt-1">Rp ${Number(prod.price).toLocaleString('id-ID')}</p>
                     </div>
                 </div>
             `;
         });
     } catch (error) {
-        console.error("Error loading products:", error);
-        listContainer.innerHTML = `
-            <div class="col-span-full text-center py-20">
-                <p class="text-red-400 font-medium">Ups! Gagal mengambil data dari API :(</p>
-                <p class="text-xs text-gray-400 mt-2">Pastikan server API kamu sudah aktif dan mengizinkan CORS ya, Ken!</p>
-                <button onclick="loadCatalog()" class="mt-4 text-pink-400 underline text-sm">Coba Lagi</button>
-            </div>
-        `;
+        console.error("Gagal load katalog Ken:", error);
     }
 }
 
-// Fungsi Filter
+async function openDetail(id) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/products/${id}`);
+        const data = await res.json();
+        const prod = data.product;
+
+        document.getElementById('side-detail-placeholder').classList.add('hidden');
+        const contentArea = document.getElementById('side-detail-content');
+        contentArea.classList.remove('hidden');
+        contentArea.innerHTML = '<p class="text-center py-10 text-pink-400 animate-pulse text-xs font-bold">Mencari inspirasi yang benar-benar pas... ✨</p>';
+
+        const inspiraRes = await fetch(`https://inspira_container.otwdochub.my.id/api/looks`);
+        const inspiraData = await inspiraRes.json();
+        const allLooks = inspiraData.data || inspiraData;
+
+        const myProductTags = prod.tags.split(',').map(t => t.trim().toLowerCase());
+
+        const filteredLooks = [];
+        const seenKeys = new Set();
+
+        allLooks.forEach(look => {
+        const hasMatch = look.item_details.some(item => {
+            const inspiraTags = item.tags.map(t => t.toLowerCase());
+            return myProductTags.every(tag => inspiraTags.includes(tag));
+        });
+
+        const key = (look.image_url || `id:${look.id}`).trim().toLowerCase();
+
+        if (hasMatch && !seenKeys.has(key)) {
+            filteredLooks.push(look);
+            seenKeys.add(key);
+        }
+        });
+        renderSidePanel(prod, filteredLooks);
+
+    } catch (error) {
+        console.error("Gagal nyocokin tags Ken:", error);
+    }
+}
+
+function renderSidePanel(prod, filteredLooks) {
+    const contentArea = document.getElementById('side-detail-content');
+    
+    contentArea.innerHTML = `
+        <div class="animate-fadeIn">
+            <img src="${prod.image_url}" class="w-full rounded-[30px] shadow-lg mb-6 aspect-[3/4] object-cover">
+            
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest">${prod.brand}</p>
+                    <h2 class="text-2xl font-bold text-[#2D2D5F]">${prod.name}</h2>
+                </div>
+                <span class="bg-pink-50 text-pink-500 text-[10px] px-3 py-1 rounded-full font-bold uppercase">${prod.category}</span>
+            </div>
+            
+            <p class="text-xl font-black text-pink-600 mb-4">Rp ${Number(prod.price).toLocaleString('id-ID')}</p>
+            <p class="text-[10px] text-gray-400 leading-relaxed mb-6 italic">${prod.tags}</p>
+
+            <div class="pt-6 border-t border-pink-50">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-lg font-bold text-[#2D2D5F] italic" style="font-family: 'Playfair Display', serif;">Style Inspiration ✨</h4>
+                    <span class="text-[9px] text-gray-400">${filteredLooks.length} looks found</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    ${filteredLooks.length > 0 ? filteredLooks.map(look => `
+                        <div class="bg-pink-50/50 p-2 rounded-2xl group/ins cursor-pointer" onclick="window.open('${look.image_url}', '_blank')">
+                            <img src="${look.image_url}" class="rounded-xl aspect-square object-cover mb-2 group-hover/ins:opacity-80 transition">
+                            <p class="text-[8px] text-center font-bold text-gray-400 uppercase truncate">${look.title || 'Inspiration'}</p>
+                        </div>
+                    `).join('') : '<p class="text-[10px] text-gray-400 col-span-2 text-center py-4">Mini belum nemu inspirasi yang bener-bener pas nih... 🌸</p>'}
+                </div>
+            </div>
+
+            <a href="${prod.product_url}" target="_blank" class="block w-full text-center bg-gradient-to-r from-pink-400 to-purple-400 text-white py-4 rounded-2xl mt-8 font-bold shadow-lg hover:scale-[1.02] transition">
+                Get This Look
+            </a>
+        </div>
+    `;
+}
+
+async function searchProduct() {
+    const query = document.getElementById('search-input').value;
+    const listContainer = document.getElementById('product-list');
+    listContainer.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400 animate-pulse">Searching for your aura...</div>';
+    
+    const res = await fetch(`${API_BASE_URL}/products/search?query=${query}`);
+    const data = await res.json();
+    loadCatalogUI(data.products);
+}
+
 function filterCategory(cat) {
     loadCatalog(cat);
 }
 
-// Tambahkan fungsi logout biar lengkap
 function logout() {
     auth.signOut().then(() => {
-        location.reload(); // Refresh ke landing page
+        location.reload();
     });
 }

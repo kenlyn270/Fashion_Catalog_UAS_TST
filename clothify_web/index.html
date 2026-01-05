@@ -9,9 +9,9 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #FFF5F7; 
-            overflow: hidden; 
-            height: 100vh;
+            background-color: #FFF5F7;
+            overflow: visible;
+            height: none;
             margin: 0;
         }
         h1 { font-family: 'Playfair Display', serif; }
@@ -115,44 +115,98 @@
             </div>
         </div>
 
-        <div id="catalog-section" class="hidden min-h-screen bg-[#FFF5F7]">
-            <nav class="flex justify-between items-center px-8 md:px-12 py-6 bg-white/30 backdrop-blur-md sticky top-0 z-[60]">
-                <div class="text-3xl font-bold text-purple-400 italic">Clothify.</div>
-                
-                <div class="hidden md:flex space-x-10 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500">
-                    <button onclick="filterCategory('')" class="hover:text-pink-400 transition">All</button>
-                    <button onclick="filterCategory('top')" class="hover:text-pink-400 transition">Tops</button>
-                    <button onclick="filterCategory('bottom')" class="hover:text-pink-400 transition">Bottoms</button>
-                    <button onclick="filterCategory('outer')" class="hover:text-pink-400 transition">Outerwear</button>
+        <div id="catalog-section" class="hidden min-h-screen bg-[#FFF8FA]">
+            <nav class="flex justify-between items-center px-12 py-6 bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-[60]">
+                <div class="text-3xl font-bold text-pink-400 italic">Clothify.</div>
+                <div class="flex-1 max-w-xl mx-12 relative group">
+                    
+                    <input id="search-input" type="text" placeholder="Search products..." 
+                        class="w-full bg-pink-50/50 border border-pink-100 rounded-2xl py-3 px-6 outline-none focus:border-pink-300 transition shadow-inner">
+                    <button onclick="searchProduct()" class="absolute right-4 top-1/2 -translate-y-1/2 text-pink-400">🔍</button>
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <span id="user-email" class="text-[10px] font-bold text-pink-400 hidden md:block"></span>
-                    <button onclick="logout()" class="px-6 py-2 border border-pink-100 rounded-full text-[10px] font-bold text-gray-400 hover:bg-pink-50 transition">Logout</button>
+                    <div id="user-display" class="text-xs font-semibold text-gray-500 bg-white border border-pink-100 px-4 py-2 rounded-full shadow-sm"></div>
+                    <button onclick="logout()" class="bg-pink-400 text-white px-6 py-2 rounded-full font-bold text-xs shadow-md hover:bg-pink-500 transition">Logout</button>
                 </div>
             </nav>
 
-            <header class="px-12 py-16 text-center">
-                <h2 class="text-7xl font-bold text-[#2D2D5F] mb-4" style="font-family: 'Playfair Display', serif;">
-                    Find Your <br> <span class="text-pink-400 italic">Fashion</span> Here
-                </h2>
-                <p class="text-gray-400 max-w-lg mx-auto">Explore our curated collection of 29+ premium pieces designed for your unique aura.</p>
-            </header>
+            <div class="flex p-8 gap-8">
+                <div class="flex-[2.5]">
 
-            <main class="px-12 pb-24">
-                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap--10">
-                    <div class="animate-pulse bg-white h-80 rounded-[40px]"></div>
-                    <div class="animate-pulse bg-white h-80 rounded-[40px]"></div>
-                    <div class="animate-pulse bg-white h-80 rounded-[40px]"></div>
+                    <div class="bg-gradient-to-r from-pink-100/50 to-purple-100/50 rounded-[40px] p-8 mb-10 border border-white shadow-sm">
+                        <div class="flex flex-col md:flex-row gap-8 items-center">
+                            <div class="flex-1 space-y-4">
+                                <h3 class="text-2xl font-bold text-[#2D2D5F]" style="font-family: 'Playfair Display', serif;">Find Your Perfect Fit ✨</h3>
+                                <p class="text-xs text-gray-500">Input your measurements or body type to get personalized fashion tips & looks.</p>
+                                
+                                <div class="grid grid-cols-3 gap-3">
+                                    <input id="shoulder" type="number" placeholder="Bahu (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
+                                    <input id="waist" type="number" placeholder="Pinggang (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
+                                    <input id="thigh" type="number" placeholder="Paha (cm)" class="p-3 rounded-2xl text-xs outline-none border border-pink-100 focus:border-pink-400">
+                                </div>
+                                
+                                <div class="flex gap-3">
+                                    <select id="style-pref" class="flex-1 p-3 rounded-2xl text-xs outline-none border border-pink-100">
+                                        <option value="casual">Casual Style</option>
+                                        <option value="clean">Clean & Minimalist</option>
+                                        <option value="feminine">Feminine Aesthetic</option>
+                                        <option value="streetwear">Streetwear</option>
+                                    </select>
+                                    <button onclick="analyzeAura()" class="bg-[#2D2D5F] text-white px-8 py-3 rounded-2xl text-xs font-bold hover:scale-105 transition">Analyze Aura</button>
+                                </div>
+                            </div>
+                            
+                            <div id="ai-response-area" class="flex-1 bg-white/80 backdrop-blur p-6 rounded-[30px] min-h-[150px] border border-white hidden">
+                                <p id="ai-tips" class="text-[11px] text-gray-600 leading-relaxed italic"></p>
+                                <div id="ai-suggested-looks" class="grid grid-cols-3 gap-2 mt-4"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
+                        <button onclick="filterCategory('')" class="cat-btn active">All Items</button>
+                        <button onclick="filterCategory('top')" class="cat-btn">Tops</button>
+                        <button onclick="filterCategory('bottom')" class="cat-btn">Bottoms</button>
+                        <button onclick="filterCategory('outer')" class="cat-btn">Outerwear</button>
+                        <button onclick="filterCategory('dresses')" class="cat-btn">Dresses</button>
+                    </div>
+
+                    <h2 class="text-4xl font-bold text-[#2D2D5F] mb-8" style="font-family: 'Playfair Display', serif;">Discover Your Style</h2>
+                    
+                    <div id="product-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        </div>
                 </div>
-            </main>
+
+                <div class="flex-1 hidden xl:block sticky top-32 h-[calc(100vh-160px)]">
+                    <div class="bg-white rounded-[40px] p-8 border border-pink-100 shadow-xl h-full overflow-y-auto custom-scroll">
+                        <div id="side-detail-placeholder" class="text-center py-20">
+                            <div class="text-5xl mb-4 italic opacity-20">✨</div>
+                            <p class="text-gray-400 italic text-sm">Click a product to see detail & inspiration</p>
+                        </div>
+                        <div id="side-detail-content" class="hidden">
+                            </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <style>
+            .cat-btn {
+                @apply px-8 py-3 rounded-2xl bg-white border border-pink-50 text-gray-500 font-bold text-xs whitespace-nowrap shadow-sm hover:border-pink-300 transition;
+            }
+            .cat-btn.active {
+                @apply bg-pink-400 text-white border-pink-400 shadow-pink-200;
+            }
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+            .custom-scroll::-webkit-scrollbar { width: 4px; }
+            .custom-scroll::-webkit-scrollbar-thumb { background: #FCE7F3; border-radius: 10px; }
+        </style>
 
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
         <script>
-        // Paste config dari Firebase Console kamu di sini
         const firebaseConfig = {
         apiKey: "AIzaSyBWGZAG1173_fGGd-PK_xsaT_0pgOaDU2w",
         authDomain: "clothify-e7c2f.firebaseapp.com",
@@ -161,7 +215,6 @@
         messagingSenderId: "1039405837376",
         appId: "1:1039405837376:web:116f907066a6fcd77a83a5"
         };
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         </script>
